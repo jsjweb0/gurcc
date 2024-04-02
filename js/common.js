@@ -101,11 +101,56 @@ $(document).ready(function () {
 	$('.totalSearch').find('.btnClose>button').on('click', function(){
 		$('.totalSearch').fadeOut();
 	});
+	
+	var $locBtn = $('.locBtn');
+		$locBtn.each(function () {
+			let $this = $(this);
+			let thisTxt = $this.closest('li').find('li.active').text();
+			$this.find('.nowTab').text(thisTxt);
+		});
+		$locBtn.on('click', function () {
+			let $navTarget = $(this).closest('li').find('div');
+			if ($navTarget.is(':hidden')) {
+				$(this).removeClass('active');
+				$(this).closest('li').find('div').hide();
+				$(this).addClass('active');
+				$navTarget.slideDown();
+			} else {
+				$(this).removeClass('active');
+				$navTarget.hide();
+			}
+		});
+		$('.locationTab').on('mouseleave', function () {
+			$(this).find($locBtn).removeClass('active');
+			$(this).find('div').removeAttr('style');
+		});
+		$(window).resize(function () {
+			if ($('.btnMoGnb').is(':hidden')) {
+				$locBtn.closest('li').find('div').removeAttr('style');
+			}
+		});
+		$('.btnShare').click(function () {
+			$(this).closest('li').addClass('active');
+			$('.shareList').css('display', 'flex');
+		});
+		$('.shareClose').on('click', function () {
+			$('.btnShare').closest('li').removeClass('active');
+			$('.shareList').fadeOut(200);
+		});
+		$('.btnPrint').click(function () {
+			window.print();
+		});
 
 	// 상단 메뉴에서 포커스 벗어났을 시 처리
 	$(document).on('focus', ':focusable', function (e) {
 		if ($gnb.has(e.target).length === 0) {
 			$header.mouseleave();
+		}
+		if ($('.locationTab div').has(e.target).length === 0) {
+				$('.locationTab').mouseleave();
+			}
+		if ($('.selectStyle').has(e.target).length === 0) {
+			$('.selectStyle').mouseleave();
 		}
 	});
 
@@ -188,40 +233,3 @@ document.addEventListener("keydown", function (event) {
     }
 }, true);
         
-
-
-function initTabMenu(tabContainerID, showNone) {
-	var tabContainer = document.getElementById(tabContainerID);
-	var tabAnchor = tabContainer.getElementsByTagName("a");
-	var i = 0;
-	for (i = 0; i < tabAnchor.length; i++) {
-		if (tabAnchor.item(i).className == "tab")
-			var thismenu = tabAnchor.item(i);
-		else
-			continue;
-		thismenu.container = tabContainer;
-		thismenu.targetEl = document.getElementById(tabAnchor.item(i).href.split("#")[1]);
-		thismenu.targetEl.style.display = "none";
-		thismenu.onclick = tabMenuOver;
-
-		if (!thismenu.container.first)
-			thismenu.container.first = thismenu;
-	}
-	if (!showNone == true) { //첫번째 컨텐츠 노출 여부
-		tabContainer.first.onclick();
-	}
-}
-
-function tabMenuOver() {
-	var currentmenu = this.container.current;
-	if (currentmenu != this) {
-		if (currentmenu) {
-			currentmenu.targetEl.style.display = "none";
-			currentmenu.className = currentmenu.className.replace(" on", "");
-		}
-		this.targetEl.style.display = "block";
-		this.className += " on";
-		this.container.current = this;
-	}
-	return false;
-}
